@@ -132,6 +132,7 @@ export interface ReviewPhotoRecord {
   placeUrl: string;
   reviewId: string | null;
   reviewUrl: string | null;
+  photoKind: 'review' | 'place';
   imageUrl: string;
   thumbnailUrl: string | null;
   altText: string | null;

@@ -30,12 +30,18 @@ test('extracts reviews and review photos from fixture HTML', async () => {
   assert.equal(reviews[0]?.authorName, 'Jane Doe');
   assert.equal(reviews[0]?.rating, 4.9);
   assert.equal(reviews[0]?.photoIds.length, 2);
+  assert.equal(reviews[0]?.photoIds.includes('https://lh3.googleusercontent.com/profile-jane.jpg' as never), false);
   assert.equal(reviews[1]?.authorName, 'Min');
   assert.equal(reviews[1]?.rating, 4.5);
 
   const photos = extractReviewPhotosFromHtml(html, place, reviews);
-  assert.equal(photos.length, 2);
+  assert.equal(photos.length, 3);
   assert.equal(photos[0]?.placeId, place.id);
   assert.equal(photos[0]?.imageUrl, 'https://lh3.googleusercontent.com/photo-a.jpg');
+  assert.equal(photos[0]?.photoKind, 'review');
   assert.equal(photos[1]?.imageUrl, 'https://lh3.googleusercontent.com/photo-b.jpg');
+  assert.equal(photos[1]?.photoKind, 'review');
+  assert.equal(photos[2]?.imageUrl, 'https://lh3.googleusercontent.com/place-hero.jpg');
+  assert.equal(photos[2]?.photoKind, 'place');
+  assert.equal(photos.some((photo) => photo.imageUrl === 'https://lh3.googleusercontent.com/profile-jane.jpg'), false);
 });

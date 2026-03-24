@@ -1,7 +1,6 @@
 import type { PageLike, PlaceRecord, SearchResultItem } from '../types/shared.js';
 import { createIsoTimestamp, firstNonNullish, safeTrim, toFiniteNumber, toInteger } from '../types/shared.js';
-import { createPlaceFromSearchResult, createPlaceRecord } from '../models/place.js';
-import { stableId } from '../utils/ids.js';
+import { createPlaceRecord } from '../models/place.js';
 import {
   collapseWhitespace,
   extractAnchors,
@@ -81,6 +80,7 @@ export async function scrapePlaceDetails(
 function parsePlaceMetadata(html: string, searchResult: SearchResultItem): ParsedPlaceMetadata {
   const jsonLdObjects = extractJsonLdObjects(html);
   const jsonLdPlace = findJsonLdPlace(jsonLdObjects);
+  const pageText = collapseWhitespace(html);
   const title = firstNonNullish(
     extractMetaContent(html, [{ property: 'og:title' }, { name: 'twitter:title' }]),
     extractTextBetweenTags(html, 'title'),
@@ -94,14 +94,36 @@ function parsePlaceMetadata(html: string, searchResult: SearchResultItem): Parse
   const phone = extractTelephone(html);
   const website = extractExternalWebsite(html);
   const rawLabel = searchResult.rawLabel;
+  const fallbackRatingReview = parseRatingAndReviewCountFromText([
+    rawLabel,
+    searchResult.snippet,
+    extractMetaContent(html, [{ property: 'og:description' }, { name: 'description' }]),
+    pageText,
+  ]);
+  const fallbackAddress = firstNonNullish(
+    extractPlaceAddress(jsonLdPlace),
+    extractAddressFromHtml(html),
+    extractAddressFromText([
+      searchResult.snippet,
+      rawLabel,
+      extractMetaContent(html, [{ name: 'description' }, { property: 'og:description' }]),
+      pageText,
+    ]),
+    searchResult.snippet
+  );
+  const fallbackCoordinates = firstNonNullish(
+    extractCoordinates(jsonLdPlace),
+    extractCoordinatesFromUrl(canonicalUrl),
+    extractCoordinatesFromUrl(searchResult.placeUrl)
+  );
 
   return {
-    name: firstNonNullish(extractPlaceName(jsonLdPlace), title, searchResult.title),
+    name: normalizePlaceTitle(firstNonNullish(extractPlaceName(jsonLdPlace), title, searchResult.title)),
     category: firstNonNullish(extractPlaceCategory(jsonLdPlace), searchResult.category),
-    address: extractPlaceAddress(jsonLdPlace),
-    coordinates: extractCoordinates(jsonLdPlace),
-    rating: firstNonNullish(extractPlaceRating(jsonLdPlace), searchResult.rating),
-    reviewCount: firstNonNullish(extractPlaceReviewCount(jsonLdPlace), searchResult.reviewCount),
+    address: fallbackAddress,
+    coordinates: fallbackCoordinates,
+    rating: firstNonNullish(extractPlaceRating(jsonLdPlace), searchResult.rating, fallbackRatingReview.rating),
+    reviewCount: firstNonNullish(extractPlaceReviewCount(jsonLdPlace), searchResult.reviewCount, fallbackRatingReview.reviewCount),
     priceLevel: extractPriceLevel(jsonLdPlace),
     phone,
     website,
@@ -176,6 +198,26 @@ function extractCoordinates(jsonLdPlace: Record<string, unknown> | null): { lat:
   const geoRecord = geo as Record<string, unknown>;
   const lat = toFiniteNumber(geoRecord.latitude);
   const lng = toFiniteNumber(geoRecord.longitude);
+  if (lat === null || lng === null) {
+    return null;
+  }
+
+  return { lat, lng };
+}
+
+export function extractCoordinatesFromUrl(url: string | null | undefined): { lat: number; lng: number } | null {
+  const normalized = safeTrim(url);
+  if (!normalized) {
+    return null;
+  }
+
+  const coordinateMatch = normalized.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+  if (!coordinateMatch) {
+    return null;
+  }
+
+  const lat = toFiniteNumber(coordinateMatch[1]);
+  const lng = toFiniteNumber(coordinateMatch[2]);
   if (lat === null || lng === null) {
     return null;
   }
@@ -262,4 +304,105 @@ function extractExternalWebsite(html: string): string | null {
   }
 
   return null;
+}
+
+function parseRatingAndReviewCountFromText(candidates: Array<string | null | undefined>): { rating: number | null; reviewCount: number | null } {
+  for (const candidate of candidates) {
+    const normalized = safeTrim(candidate);
+    if (!normalized) {
+      continue;
+    }
+
+    const ratingMatch = normalized.match(/([0-5](?:\.\d+)?)\s*(?:stars?|★)/i);
+    const reviewCountMatch = normalized.match(/([\d,]+)\s*reviews?/i);
+
+    const rating = ratingMatch ? toFiniteNumber(ratingMatch[1]) : null;
+    const reviewCount = reviewCountMatch ? toInteger(reviewCountMatch[1]) : null;
+
+    if (rating !== null || reviewCount !== null) {
+      return { rating, reviewCount };
+    }
+  }
+
+  return { rating: null, reviewCount: null };
+}
+
+function extractAddressFromHtml(html: string): string | null {
+  const metaAddress = extractMetaContent(html, [{ itemprop: 'streetAddress' }]);
+  if (metaAddress) {
+    return metaAddress;
+  }
+
+  const addressBlock = extractElementsByAttribute(html, 'data-item-id', ['button', 'div', 'span']).find((element) => {
+    const itemId = safeTrim(element.attributes['data-item-id'])?.toLowerCase();
+    return itemId === 'address';
+  });
+
+  if (addressBlock?.text) {
+    return addressBlock.text;
+  }
+
+  const addressByAria = extractElementsByAttribute(html, 'aria-label', ['button', 'div', 'span']).find((element) => {
+    const ariaLabel = safeTrim(element.attributes['aria-label'])?.toLowerCase();
+    return ariaLabel?.includes('address') ?? false;
+  });
+
+  if (addressByAria?.text) {
+    return addressByAria.text;
+  }
+
+  return null;
+}
+
+function extractAddressFromText(candidates: Array<string | null | undefined>): string | null {
+  for (const candidate of candidates) {
+    const normalized = safeTrim(candidate);
+    if (!normalized) {
+      continue;
+    }
+
+    const segments = normalized
+      .split(/[·•|]/)
+      .map((segment) => safeTrim(segment))
+      .filter((segment): segment is string => Boolean(segment));
+
+    for (const segment of segments) {
+      if (looksLikeAddress(segment)) {
+        return segment;
+      }
+    }
+
+    if (looksLikeAddress(normalized)) {
+      return normalized;
+    }
+  }
+
+  return null;
+}
+
+function looksLikeAddress(value: string): boolean {
+  const normalized = value.toLowerCase();
+
+  if (/(?:\b\d{1,4}\b.*\b(?:street|st|road|rd|avenue|ave|lane|ln|boulevard|blvd)\b)/i.test(value)) {
+    return true;
+  }
+
+  if (/(tokyo|japan|shibuya|shinjuku|minato|chiyoda|setagaya|meguro|city|ward|ku|district)/i.test(normalized)) {
+    return true;
+  }
+
+  if (/\d+-\d+/.test(value) && /(tokyo|japan)/i.test(normalized)) {
+    return true;
+  }
+
+  return false;
+}
+
+function normalizePlaceTitle(value: string | null): string | null {
+  const normalized = safeTrim(value);
+  if (!normalized) {
+    return null;
+  }
+
+  return normalized.replace(/\s*-\s*google maps$/i, '').trim();
 }

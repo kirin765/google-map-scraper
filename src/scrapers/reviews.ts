@@ -7,9 +7,9 @@ import {
   collapseWhitespace,
   extractAnchors,
   extractElementsByAttribute,
-  extractImageTags,
 } from '../utils/html.js';
 import { isSameGoogleMapsPlaceUrl } from '../utils/maps-url.js';
+import { extractReviewPhotoEntries } from './review-photos.js';
 import { scrollUntilStable, waitForPageReady } from '../browser/waits.js';
 
 export interface ReviewScrapeOptions {
@@ -95,7 +95,12 @@ export function parseReviewBlock(fragment: string, attributes: Record<string, st
   const text = extractReviewText(fragment);
   const translatedText = extractTranslatedText(fragment);
   const likes = extractLikes(fragment, rawLabel);
-  const photoUrls = uniqueStrings(extractPhotoUrls(fragment));
+  const photoUrls = uniqueStrings(
+    extractReviewPhotoEntries(fragment, {
+      authorName,
+      reviewId,
+    }).map((entry) => entry.imageUrl)
+  );
 
   return {
     reviewId,
@@ -202,30 +207,4 @@ function extractLikes(fragment: string, label: string | null): number | null {
   const textLikeCount = label?.match(/([\d,]+)\s+likes?/i)?.[1];
   const likes = toInteger(dataLikeCount ?? textLikeCount);
   return likes;
-}
-
-function extractPhotoUrls(fragment: string): string[] {
-  const photos = extractImageTags(fragment).flatMap((image) => {
-    const photoUrl = safeTrim(image.attributes['data-photo-url']) ?? safeTrim(image.attributes.src) ?? null;
-    if (!photoUrl) {
-      return [];
-    }
-
-    return [photoUrl];
-  });
-
-  const anchors = extractAnchors(fragment).flatMap((anchor) => {
-    const href = safeTrim(anchor.attributes.href);
-    if (!href) {
-      return [];
-    }
-
-    if (!/googleusercontent\.com|lh3\.googleusercontent\.com/i.test(href)) {
-      return [];
-    }
-
-    return [href];
-  });
-
-  return [...photos, ...anchors];
 }

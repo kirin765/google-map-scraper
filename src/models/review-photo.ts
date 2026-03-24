@@ -6,6 +6,7 @@ export interface ReviewPhotoRecordInput {
   placeId: string;
   placeUrl: string;
   imageUrl: string;
+  photoKind?: 'review' | 'place';
   sourceUrl?: string | null;
   reviewId?: string | null;
   reviewUrl?: string | null;
@@ -25,6 +26,7 @@ export function createReviewPhotoRecord(input: ReviewPhotoRecordInput): ReviewPh
   const placeId = safeTrim(input.placeId) ?? '';
   const placeUrl = safeTrim(input.placeUrl) ?? '';
   const imageUrl = safeTrim(input.imageUrl) ?? '';
+  const photoKind = input.photoKind ?? 'review';
   const reviewId = safeTrim(input.reviewId);
   const reviewUrl = safeTrim(input.reviewUrl);
   const thumbnailUrl = safeTrim(input.thumbnailUrl);
@@ -40,6 +42,7 @@ export function createReviewPhotoRecord(input: ReviewPhotoRecordInput): ReviewPh
     placeUrl,
     reviewId: reviewId ?? null,
     reviewUrl: reviewUrl ?? null,
+    photoKind,
     imageUrl,
     thumbnailUrl: thumbnailUrl ?? null,
     altText: altText ?? null,
@@ -65,6 +68,7 @@ export function createReviewPhotoRecords(place: PlaceRecord, reviews: ReviewReco
         createReviewPhotoRecord({
           placeId: place.id,
           placeUrl: place.sourceUrl,
+          photoKind: 'review',
           reviewId,
           reviewUrl: review.sourceUrl,
           imageUrl,
