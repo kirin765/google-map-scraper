@@ -1,0 +1,14 @@
+# Build output.
+dist/
+.tsbuildinfo
+
+# Runtime artifacts.
+output/*.json
+output/*.ndjson
+output/*.csv
+
+# Environment-specific files.
+.env
+node_modules/
+playwright-report/
+test-results/
