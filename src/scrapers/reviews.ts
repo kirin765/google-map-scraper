@@ -1,5 +1,5 @@
 import { DEFAULT_SCROLL_ATTEMPTS, DEFAULT_SCROLL_SETTLE_MS } from '../config/defaults.js';
-import { createIsoTimestamp, safeTrim, toFiniteNumber, toInteger, uniqueStrings } from '../types/shared.js';
+import { createIsoTimestamp, safeTrim, toFiniteNumber, toInteger } from '../types/shared.js';
 import type { PageLike, PlaceRecord, ReviewRecord } from '../types/shared.js';
 import { createReviewRecord } from '../models/review.js';
 import { stableId } from '../utils/ids.js';
@@ -9,7 +9,6 @@ import {
   extractElementsByAttribute,
 } from '../utils/html.js';
 import { isSameGoogleMapsPlaceUrl } from '../utils/maps-url.js';
-import { extractReviewPhotoEntries } from './review-photos.js';
 import { scrollUntilStable, waitForPageReady } from '../browser/waits.js';
 
 export interface ReviewScrapeOptions {
@@ -95,13 +94,6 @@ export function parseReviewBlock(fragment: string, attributes: Record<string, st
   const text = extractReviewText(fragment);
   const translatedText = extractTranslatedText(fragment);
   const likes = extractLikes(fragment, rawLabel);
-  const photoUrls = uniqueStrings(
-    extractReviewPhotoEntries(fragment, {
-      authorName,
-      reviewId,
-    }).map((entry) => entry.imageUrl)
-  );
-
   return {
     reviewId,
     authorName,
@@ -112,7 +104,7 @@ export function parseReviewBlock(fragment: string, attributes: Record<string, st
     translatedText,
     likes,
     rawLabel,
-    photoUrls,
+    photoUrls: [],
   };
 }
 

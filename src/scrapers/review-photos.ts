@@ -13,46 +13,9 @@ export interface ReviewPhotoScrapeOptions {
 }
 
 export function extractReviewPhotosFromHtml(html: string, place: PlaceRecord, reviews: ReviewRecord[] = []): ReviewPhotoRecord[] {
-  const reviewMap = new Map(reviews.map((review) => [review.id, review]));
-  const records: ReviewPhotoRecord[] = [];
   const scrapedAt = createIsoTimestamp();
-  const blocks = extractElementsByAttribute(html, 'data-review-id');
-  const reviewPhotoUrls = new Set<string>();
-
-  for (const block of blocks) {
-    const reviewId = safeTrim(block.attributes['data-review-id']);
-    const review = reviewId ? reviewMap.get(reviewId) ?? null : null;
-    const photoEntries = extractReviewPhotoEntries(block.innerHtml, {
-      authorName: review?.authorName ?? null,
-      reviewId,
-    });
-
-    for (const entry of photoEntries) {
-      reviewPhotoUrls.add(entry.imageUrl);
-      records.push(
-        createReviewPhotoRecord({
-          placeId: place.id,
-          placeUrl: place.sourceUrl,
-          photoKind: 'review',
-          reviewId,
-          reviewUrl: review?.sourceUrl ?? null,
-          imageUrl: entry.imageUrl,
-          sourceUrl: review?.sourceUrl ?? place.sourceUrl,
-          thumbnailUrl: entry.thumbnailUrl,
-          altText: entry.altText,
-          width: entry.width,
-          height: entry.height,
-          scrapedAt,
-          id: stableId([place.id, reviewId ?? '', entry.imageUrl]),
-        })
-      );
-    }
-  }
-
   const nonReviewHtml = removeReviewBlocks(html);
-  const placeEntries = extractPlacePhotoEntries(nonReviewHtml, {
-    excludeUrls: reviewPhotoUrls,
-  });
+  const placeEntries = extractPlacePhotoEntries(nonReviewHtml);
 
   const placeRecords = placeEntries.map((entry) =>
     createReviewPhotoRecord({
@@ -72,7 +35,7 @@ export function extractReviewPhotosFromHtml(html: string, place: PlaceRecord, re
     })
   );
 
-  return [...records, ...placeRecords];
+  return placeRecords;
 }
 
 export async function scrapeReviewPhotos(

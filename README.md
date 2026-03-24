@@ -1,16 +1,16 @@
 # Google Map Scraper
 
-Google Maps place/review/review-photo scraper implemented in TypeScript.
+Google Maps place/review/place-photo scraper implemented in TypeScript.
 
 ## Scope
 - Search Google Maps with multiple keywords in a single region.
-- Collect place metadata, ratings, reviews, and review-photo references.
+- Collect place metadata, ratings, reviews, and place-photo references.
 - Export normalized results as JSON or NDJSON.
 
 ## Project layout
 - `src/cli`: CLI argument parsing and job entry flow.
 - `src/browser`: browser launch, context, waits, and CDP helpers.
-- `src/scrapers`: extraction steps for search results, place details, reviews, and review photos.
+- `src/scrapers`: extraction steps for search results, place details, reviews, and place photos.
 - `src/models`: normalized types for places, reviews, and jobs.
 - `src/exporters`: JSON and NDJSON output writers.
 - `src/pipelines`: orchestration for multi-keyword single-region runs.
@@ -75,7 +75,7 @@ The scraper currently delivers data as files in the directory passed to `--outpu
 - `type: "run"`: job metadata and aggregate counts
 - `type: "place"`: normalized place record
 - `type: "review"`: normalized review record
-- `type: "review-photo"`: normalized review-photo record
+- `type: "review-photo"`: normalized photo record for place-related images only
 
 ### JSON payload shape
 When `--format json` is used, one file is written with:
