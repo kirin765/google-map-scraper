@@ -40,5 +40,13 @@ test('extracts reviews and review photos from fixture HTML', async () => {
   assert.equal(photos[0]?.imageUrl, 'https://lh3.googleusercontent.com/place-hero.jpg');
   assert.equal(photos[0]?.photoKind, 'place');
   assert.equal(photos.some((photo) => photo.imageUrl === 'https://lh3.googleusercontent.com/profile-jane.jpg'), false);
+  assert.equal(
+    photos.some(
+      (photo) =>
+        photo.imageUrl ===
+        'https://lh3.googleusercontent.com/gps-cs-s/AHVAwer3sj2YRXwxJ5oAZ3CpiEuh_8yDTD1GD8tK-aBnFxjMHcT9EC4SV309HqEi-k-_cEtG2cTwNE2TF0qko3a030atLz2c8RKaSCGkIMDsQe7KpAuA86ahntKJiz_hU2HpFpf5PDoTqw=w112-h112-p-k-no'
+    ),
+    false
+  );
   assert.equal(photos.some((photo) => photo.photoKind === 'review'), false);
 });

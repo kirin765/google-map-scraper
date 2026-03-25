@@ -184,6 +184,11 @@ interface PhotoCandidate {
   raw: string;
 }
 
+interface ResolvedPhotoDimensions {
+  width: number | null;
+  height: number | null;
+}
+
 function shouldIncludePhotoCandidate(
   candidate: PhotoCandidate,
   options: {
@@ -195,6 +200,7 @@ function shouldIncludePhotoCandidate(
     .filter((value): value is string => Boolean(value))
     .join(' ')
     .toLowerCase();
+  const dimensions = resolvePhotoDimensions(candidate);
 
   const hasExplicitPhotoData = /data-photo-url|data-thumbnail-url|data-photo-index|data-photo-id/i.test(candidate.raw);
   const mentionsProfile = /\b(profile|avatar|reviewer|author|user icon|user photo)\b/i.test(lowerContext);
@@ -202,12 +208,19 @@ function shouldIncludePhotoCandidate(
   const authorName = safeTrim(options.authorName)?.toLowerCase() ?? null;
   const mentionsAuthorName = authorName ? lowerContext.includes(authorName) : false;
   const smallSquareAvatar =
-    candidate.width !== null &&
-    candidate.height !== null &&
-    candidate.width <= 128 &&
-    candidate.height <= 128 &&
-    Math.abs(candidate.width - candidate.height) <= 24;
+    dimensions.width !== null &&
+    dimensions.height !== null &&
+    dimensions.width <= 128 &&
+    dimensions.height <= 128 &&
+    Math.abs(dimensions.width - dimensions.height) <= 24;
   const likelyProfileUrl = /avatar|profile|userphoto|reviewer/i.test(candidate.imageUrl);
+  const tooSmallPhoto =
+    (dimensions.width !== null && dimensions.width <= 150) ||
+    (dimensions.height !== null && dimensions.height <= 150);
+
+  if (tooSmallPhoto) {
+    return false;
+  }
 
   if (hasExplicitPhotoData) {
     return true;
@@ -229,9 +242,53 @@ function shouldIncludePhotoCandidate(
     return !smallSquareAvatar;
   }
 
-  return mentionsReviewPhoto || candidate.width === null || candidate.height === null || candidate.width >= 160 || candidate.height >= 160;
+  return (
+    mentionsReviewPhoto ||
+    dimensions.width === null ||
+    dimensions.height === null ||
+    dimensions.width >= 160 ||
+    dimensions.height >= 160
+  );
 }
 
 function removeReviewBlocks(html: string): string {
   return html.replace(/<article\b[^>]*data-review-id=["'][^"']+["'][\s\S]*?<\/article>/gi, ' ');
+}
+
+function resolvePhotoDimensions(candidate: PhotoCandidate): ResolvedPhotoDimensions {
+  const width = firstDefinedNumber(
+    candidate.width,
+    extractDimensionFromUrl(candidate.imageUrl, 'w'),
+    extractDimensionFromUrl(candidate.thumbnailUrl, 'w')
+  );
+  const height = firstDefinedNumber(
+    candidate.height,
+    extractDimensionFromUrl(candidate.imageUrl, 'h'),
+    extractDimensionFromUrl(candidate.thumbnailUrl, 'h')
+  );
+
+  return {
+    width,
+    height,
+  };
+}
+
+function firstDefinedNumber(...values: Array<number | null>): number | null {
+  for (const value of values) {
+    if (value !== null) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
+function extractDimensionFromUrl(url: string | null, prefix: 'w' | 'h'): number | null {
+  const normalized = safeTrim(url);
+  if (!normalized) {
+    return null;
+  }
+
+  const match = normalized.match(new RegExp(`(?:=|-)${prefix}(\\d+)(?:\\b|-)`, 'i'));
+  return match?.[1] ? toInteger(match[1]) : null;
 }
