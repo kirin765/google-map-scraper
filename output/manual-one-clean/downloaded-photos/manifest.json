@@ -1,0 +1,86 @@
+{
+  "placeName": "포켓몬 카페 도쿄 니혼바시",
+  "placeSourceUrl": "https://www.google.com/maps/place/%ED%8F%AC%EC%BC%93%EB%AA%AC+%EC%B9%B4%ED%8E%98+%EB%8F%84%EC%BF%84+%EB%8B%88%ED%98%BC%EB%B0%94%EC%8B%9C/data=!4m7!3m6!1s0x601889578c05994f:0x4194b7a8a0458825!8m2!3d35.6806385!4d139.7744332!16s%2Fg%2F11hcsbc81c!19sChIJT5kFjFeJGGARJYhFoKi3lEE?authuser=0&hl=ko&rclk=1",
+  "downloaded": [
+    {
+      "index": 1,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwernAtgSZBjXxCWlIOGERP_hVE1aJnbNR5V5AtG2cxhwAG7g8BO8c4eD_mgAoTPn2RCaF4VkRDMHXgTndc6dedfD88y9v90m558YcMY3Tp9czEFYyGAjGPN8MQwgc7UXDcUIZjLX=w426-h240-k-no",
+      "localFile": "place-photo-01.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 2,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwer7jvAtBROKJtdJwc-mD1FGwWBEyBoDcnYkr47IngoaIRExEvmhqrwK0oayqi16ouj8Am0WvE6IKoZbs9bEtUUoua_UWcX431zbTbmQY7zg8bUlnP5osbpuPJECv5mT7nfs0fmCL7rTcKsw=w112-h112-p-k-no",
+      "localFile": "place-photo-02.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 3,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwer3sj2YRXwxJ5oAZ3CpiEuh_8yDTD1GD8tK-aBnFxjMHcT9EC4SV309HqEi-k-_cEtG2cTwNE2TF0qko3a030atLz2c8RKaSCGkIMDsQe7KpAuA86ahntKJiz_hU2HpFpf5PDoTqw=w112-h112-p-k-no",
+      "localFile": "place-photo-03.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 4,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwerrccYpAVA2rqfR1bczK3IXpyjnkOW7JOJ5GtFXRgbcBuRTCjmNjKtQKQ1EyIOtGKVQaAET_1LREXgv58mOQD0a4xWg3fitFrL7Td5MIF5wDO5B4stp6Li8fSy8jgzV2renQ0Td=w112-h112-p-k-no",
+      "localFile": "place-photo-04.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 5,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwernAtgSZBjXxCWlIOGERP_hVE1aJnbNR5V5AtG2cxhwAG7g8BO8c4eD_mgAoTPn2RCaF4VkRDMHXgTndc6dedfD88y9v90m558YcMY3Tp9czEFYyGAjGPN8MQwgc7UXDcUIZjLX=w529-h298-k-no",
+      "localFile": "place-photo-05.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 6,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwerhtXjFwt0IWyCFW25qogY_SjHrlIOogyOHqhPjD21zmBS2hAqCDuZBqyW3JnSH42iEWhNRr2BrdB8JW730SiLuWRlEv0W6u1E3h774HtSycwzWq9kB3atrKgNmUI2GoUYynJP8mJ9GpLQr=w228-h298-k-no",
+      "localFile": "place-photo-06.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 7,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwep2z77TpcyHi29ybTuih--K4m7Luw0vRQ8UWHJotuHWYZYdmYD4mvLHlZ3qBNOWkCINZUjAZo1Q-V-Tv4wc4TNrZOoTWqIiMKxA2B5FjmOLr_WsScYN0i1ZoV_PfMAymOyZAvy1X2kghIE=w529-h298-k-no",
+      "localFile": "place-photo-07.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 8,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAwer7jvAtBROKJtdJwc-mD1FGwWBEyBoDcnYkr47IngoaIRExEvmhqrwK0oayqi16ouj8Am0WvE6IKoZbs9bEtUUoua_UWcX431zbTbmQY7zg8bUlnP5osbpuPJECv5mT7nfs0fmCL7rTcKsw=w224-h298-k-no",
+      "localFile": "place-photo-08.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 9,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqBWga-2hlerAlsm__kz420b2XNDXqR7qo_5REiGBdooxodePtwMAvM29RqjXGZgoIvxXXnJFWOq0d6WlDhzy3gYy3hN20QOI4a5dmrLatOECw67Xz7u5NXrtXkPAJxTbvoq3-k=w529-h298-k-no",
+      "localFile": "place-photo-09.jpg",
+      "status": "ok",
+      "error": ""
+    },
+    {
+      "index": 10,
+      "photoKind": "place",
+      "sourceUrl": "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqNQjtLpOA5AroYffdD1Lfwl6O9Zi3177W5v1V-26l757PuJz6jk3803fufyrSR1UNgck_sHxnSxa8M_m42uxlxSEfKKspY7T_ZGE7P_-BlpwP-8obqCD5MWOQBKtNx7Uryvaii1g=w397-h298-k-no",
+      "localFile": "place-photo-10.jpg",
+      "status": "ok",
+      "error": ""
+    }
+  ]
+}

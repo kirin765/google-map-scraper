@@ -1,0 +1,128 @@
+{
+  "job": {
+    "keywords": [
+      "cafe",
+      "restaurant"
+    ],
+    "region": "Seoul, South Korea",
+    "outputDir": "output/seoul-run",
+    "outputFormat": "json",
+    "maxPlacesPerKeyword": 5,
+    "maxReviewsPerPlace": 3,
+    "headless": true,
+    "browserName": "chromium",
+    "browserExecutablePath": "/usr/bin/google-chrome",
+    "locale": "ko-KR",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+    "timeoutMs": 30000,
+    "retryAttempts": 3,
+    "retryDelayMs": 1000,
+    "resume": false,
+    "debug": false,
+    "dryRun": false,
+    "keywordBatchSize": 1,
+    "viewport": {
+      "width": 1440,
+      "height": 1024
+    }
+  },
+  "searchResults": [
+    {
+      "id": "search_001",
+      "keyword": "cafe",
+      "region": "Seoul, South Korea",
+      "title": "Blue Bottle Samcheong",
+      "placeUrl": "https://www.google.com/maps/place/Blue+Bottle+Samcheong/data=!4m7!3m6!1s0x357ca2f000000001:0x1111111111111111!8m2!3d37.5821!4d126.9824!16s%2Fg%2F11example",
+      "category": "Cafe",
+      "rating": 4.3,
+      "reviewCount": 1521,
+      "snippet": "Popular coffee spot in Bukchon with desserts and seating.",
+      "rank": 1,
+      "rawLabel": "Blue Bottle Samcheong, Cafe, 4.3(1,521)",
+      "scrapedAt": "2026-03-24T12:00:00.000Z"
+    }
+  ],
+  "places": [
+    {
+      "id": "place_001",
+      "searchResultId": "search_001",
+      "searchKeyword": "cafe",
+      "region": "Seoul, South Korea",
+      "name": "Blue Bottle Samcheong",
+      "category": "Cafe",
+      "address": "76 Bukchon-ro 5-gil, Jongno-gu, Seoul",
+      "coordinates": {
+        "lat": 37.5821,
+        "lng": 126.9824
+      },
+      "rating": 4.3,
+      "reviewCount": 1521,
+      "priceLevel": "$$",
+      "phone": "+82 2-000-0000",
+      "website": "https://example.com/blue-bottle-samcheong",
+      "description": "Specialty coffee shop near Bukchon Hanok Village.",
+      "sourceUrl": "https://www.google.com/maps/place/Blue+Bottle+Samcheong/data=!4m7!3m6!1s0x357ca2f000000001:0x1111111111111111!8m2!3d37.5821!4d126.9824!16s%2Fg%2F11example",
+      "searchUrl": "https://www.google.com/maps/search/cafe+in+Seoul",
+      "rawTitle": "Blue Bottle Samcheong - Google Maps",
+      "rawLabel": "Blue Bottle Samcheong, Cafe, 4.3(1,521)",
+      "keywords": [
+        "cafe",
+        "Seoul, South Korea",
+        "Blue Bottle Samcheong"
+      ],
+      "scrapedAt": "2026-03-24T12:00:05.000Z"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "review_001",
+      "placeId": "place_001",
+      "placeUrl": "https://www.google.com/maps/place/Blue+Bottle+Samcheong/data=!4m7!3m6!1s0x357ca2f000000001:0x1111111111111111!8m2!3d37.5821!4d126.9824!16s%2Fg%2F11example",
+      "authorName": "Jane Doe",
+      "authorProfileUrl": "https://www.google.com/maps/contrib/100000000000000000001",
+      "rating": 5,
+      "publishedAt": "3 weeks ago",
+      "text": "Great coffee and nice atmosphere.",
+      "translatedText": null,
+      "likes": 2,
+      "sourceUrl": "https://www.google.com/maps/reviews/data=!4m5!14m4!1m3!1m2!1splace_001!2sreview_001",
+      "photoIds": [],
+      "scrapedAt": "2026-03-24T12:00:10.000Z",
+      "rawLabel": "Jane Doe · 5 stars · 3 weeks ago"
+    }
+  ],
+  "photos": [
+    {
+      "id": "photo_002",
+      "placeId": "place_001",
+      "placeUrl": "https://www.google.com/maps/place/Blue+Bottle+Samcheong/data=!4m7!3m6!1s0x357ca2f000000001:0x1111111111111111!8m2!3d37.5821!4d126.9824!16s%2Fg%2F11example",
+      "reviewId": null,
+      "reviewUrl": null,
+      "photoKind": "place",
+      "imageUrl": "https://lh3.googleusercontent.com/p/AF1QipPlacePhotoExample=s2048",
+      "thumbnailUrl": "https://lh3.googleusercontent.com/p/AF1QipPlacePhotoExample=w600-h450",
+      "altText": "Interior view",
+      "width": 2048,
+      "height": 1536,
+      "sourceUrl": "https://www.google.com/maps/place/Blue+Bottle+Samcheong/data=!4m7!3m6!1s0x357ca2f000000001:0x1111111111111111!8m2!3d37.5821!4d126.9824!16s%2Fg%2F11example",
+      "scrapedAt": "2026-03-24T12:00:13.000Z"
+    }
+  ],
+  "checkpoint": {
+    "version": 1,
+    "region": "Seoul, South Korea",
+    "keywords": [
+      "cafe",
+      "restaurant"
+    ],
+    "nextKeywordIndex": 2,
+    "nextPlaceIndexByKeyword": {
+      "cafe": 1,
+      "restaurant": 0
+    },
+    "completedPlaceIds": [
+      "place_001"
+    ],
+    "updatedAt": "2026-03-24T12:00:14.000Z"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "region": "Tokyo, Japan",
+  "keywords": [
+    "cafe"
+  ],
+  "nextKeywordIndex": 1,
+  "nextPlaceIndexByKeyword": {
+    "cafe": 1
+  },
+  "completedPlaceIds": [
+    "42b4af9f69b49e1a"
+  ],
+  "updatedAt": "2026-03-24T05:06:19.016Z"
+}
