@@ -7,6 +7,25 @@ import type { BrowserLauncher, CheckpointState, Logger, PlaceRecord, ReviewPhoto
 import { advanceKeywordCheckpoint, createCheckpointState, loadCheckpoint, markPlaceCheckpoint, normalizeCheckpointState, saveCheckpoint } from '../utils/checkpoint.js';
 import { createLogger } from '../utils/logger.js';
 import { retry } from '../utils/retry.js';
+
+async function retryWithLogging<T>(
+  op: () => Promise<T>,
+  label: string,
+  logger: Logger,
+  job: Pick<ScrapeJobInput, 'retryAttempts' | 'retryDelayMs'>
+): Promise<T> {
+  return retry(op, {
+    attempts: job.retryAttempts,
+    delayMs: job.retryDelayMs,
+    onRetry(error, attempt, delayMs) {
+      logger.warn(`${label} retry scheduled`, { attempt, delayMs, error: error instanceof Error ? error.message : String(error) });
+    },
+  });
+}
+
+function assertNever(x: never): never {
+  throw new Error(`Unexpected value: ${x}`);
+}
 import { scrapeSearchResults } from '../scrapers/search-results.js';
 import { scrapePlaceDetails } from '../scrapers/place-details.js';
 import { scrapeReviews } from '../scrapers/reviews.js';
@@ -99,24 +118,16 @@ export async function scrapeRegionKeywords(job: ScrapeJobInput, dependencies: Sc
         startPlaceIndex,
       });
 
-      const keywordResults = await retry(
+      const keywordResults = await retryWithLogging(
         () =>
           scrapeSearchResults(session.page, {
             keyword,
             region: job.region,
             limit: job.maxPlacesPerKeyword,
           }),
-        {
-          attempts: job.retryAttempts,
-          delayMs: job.retryDelayMs,
-          onRetry(error, attempt, delayMs) {
-            keywordLogger.warn('search retry scheduled', {
-              attempt,
-              delayMs,
-              error: error instanceof Error ? error.message : String(error),
-            });
-          },
-        }
+        'search',
+        keywordLogger,
+        job
       );
 
       searchResults.push(...keywordResults);
@@ -132,19 +143,11 @@ export async function scrapeRegionKeywords(job: ScrapeJobInput, dependencies: Sc
           title: searchResult.title,
         });
 
-        const place = await retry(
+        const place = await retryWithLogging(
           () => scrapePlaceDetails(session.page, searchResult),
-          {
-            attempts: job.retryAttempts,
-            delayMs: job.retryDelayMs,
-            onRetry(error, attempt, delayMs) {
-              placeLogger.warn('place detail retry scheduled', {
-                attempt,
-                delayMs,
-                error: error instanceof Error ? error.message : String(error),
-              });
-            },
-          }
+          'place detail',
+          placeLogger,
+          job
         );
 
         if (seenPlaceIds.has(place.id)) {
@@ -156,36 +159,20 @@ export async function scrapeRegionKeywords(job: ScrapeJobInput, dependencies: Sc
         seenPlaceIds.add(place.id);
         places.push(place);
 
-        const placeReviews = await retry(
+        const placeReviews = await retryWithLogging(
           () => scrapeReviews(session.page, place, { limit: job.maxReviewsPerPlace }),
-          {
-            attempts: job.retryAttempts,
-            delayMs: job.retryDelayMs,
-            onRetry(error, attempt, delayMs) {
-              placeLogger.warn('review retry scheduled', {
-                attempt,
-                delayMs,
-                error: error instanceof Error ? error.message : String(error),
-              });
-            },
-          }
+          'review',
+          placeLogger,
+          job
         );
 
         reviews.push(...placeReviews);
 
-        const placePhotos = await retry(
+        const placePhotos = await retryWithLogging(
           () => scrapeReviewPhotos(session.page, place, placeReviews),
-          {
-            attempts: job.retryAttempts,
-            delayMs: job.retryDelayMs,
-            onRetry(error, attempt, delayMs) {
-              placeLogger.warn('review-photo retry scheduled', {
-                attempt,
-                delayMs,
-                error: error instanceof Error ? error.message : String(error),
-              });
-            },
-          }
+          'review-photo',
+          placeLogger,
+          job
         );
 
         photos.push(...placePhotos);
@@ -250,7 +237,12 @@ async function persistExport(outputPath: string, result: ScrapeRunResult, output
     return;
   }
 
-  await writeNdjsonExport(outputPath, result);
+  if (outputFormat === 'ndjson') {
+    await writeNdjsonExport(outputPath, result);
+    return;
+  }
+
+  assertNever(outputFormat);
 }
 
 function resolveCheckpointPath(job: ScrapeJobInput): string {

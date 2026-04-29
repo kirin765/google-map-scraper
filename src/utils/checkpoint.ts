@@ -57,8 +57,13 @@ export function markPlaceCheckpoint(state: CheckpointState, keyword: string, nex
 export async function loadCheckpoint(filePath: string): Promise<CheckpointState | null> {
   try {
     const raw = await readFile(filePath, 'utf8');
-    const parsed = JSON.parse(raw) as CheckpointState;
-    return normalizeCheckpointState(parsed);
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+
+    if (parsed['version'] !== 1 || typeof parsed['region'] !== 'string' || !Array.isArray(parsed['keywords'])) {
+      throw new Error('Checkpoint file is invalid or from an incompatible version');
+    }
+
+    return normalizeCheckpointState(parsed as unknown as CheckpointState);
   } catch (error) {
     if (isMissingFileError(error)) {
       return null;
